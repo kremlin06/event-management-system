@@ -104,10 +104,13 @@ const Login = () => {
          }
 
       } catch (error) {
-         if (error.status === 401 || error.response?.status === 401) {
-         setToast({ type: 'error', message: 'Invalid credentials. Please check your username/email and password.' });
+         const status = error.response?.status ?? error.status;
+         if (status === 401) {
+            setToast({ type: 'error', message: 'Invalid credentials. Please check your email and password.' });
+         } else if (status === 429) {
+            setToast({ type: 'warning', message: 'Too many login attempts. Please wait a moment and try again.' });
          } else {
-         setToast({ type: 'error', message: 'Something went wrong. Please try again.' });
+            setToast({ type: 'error', message: 'Something went wrong. Please try again.' });
          }
          console.error('Login error:', error);
       } finally {

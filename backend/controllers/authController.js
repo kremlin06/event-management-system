@@ -84,42 +84,51 @@ const issueTokens = async (res, user) => {
 const register = async (req, res) => {
   const { fullName, email, password, studentId, department } = req.body;
 
-  // Check for duplicate email (unique constraint would catch it too,
-  // but we want a clear error message, not a raw Sequelize error)
-  const existing = await User.findOne({ where: { email } });
-  if (existing) {
-    return res.status(409).json({
-      error: { message: 'An account with this email already exists.', code: 'EMAIL_TAKEN', field: 'email' },
-    });
-  }
-
-  // Check for duplicate studentId if provided
-  if (studentId) {
-    const existingStudent = await User.findOne({ where: { studentId } });
-    if (existingStudent) {
+  try {
+    // Check for duplicate email (unique constraint would catch it too,
+    // but we want a clear error message, not a raw Sequelize error)
+    const existing = await User.findOne({ where: { email } });
+    if (existing) {
       return res.status(409).json({
-        error: { message: 'This Student ID is already registered.', code: 'STUDENT_ID_TAKEN', field: 'studentId' },
+        error: { message: 'An account with this email already exists.', code: 'EMAIL_TAKEN', field: 'email' },
       });
     }
+
+    // Check for duplicate studentId if provided
+    if (studentId) {
+      const existingStudent = await User.findOne({ where: { studentId } });
+      if (existingStudent) {
+        return res.status(409).json({
+          error: { message: 'This Student ID is already registered.', code: 'STUDENT_ID_TAKEN', field: 'studentId' },
+        });
+      }
+    }
+
+    const passwordHash = await hashPassword(password);
+
+    const user = await User.create({
+      fullName,
+      email,
+      passwordHash,
+      studentId:  studentId  || null,
+      department: department || null,
+      role: 'Attendee',  // self-registration always creates Attendee; Admin assigns roles later
+    });
+
+    const { accessToken } = await issueTokens(res, user);
+
+    return res.status(201).json({
+      accessToken,
+      user: toPublicUser(user),
+    });
+  } catch (err) {
+    // Same rationale as login(): convert unexpected errors into a clean 500 JSON
+    // response instead of an unhandled rejection that hangs the request.
+    logger.error('[register] unexpected error:', err);
+    return res.status(500).json({
+      error: { message: 'Internal server error.', code: 'INTERNAL_ERROR' },
+    });
   }
-
-  const passwordHash = await hashPassword(password);
-
-  const user = await User.create({
-    fullName,
-    email,
-    passwordHash,
-    studentId:  studentId  || null,
-    department: department || null,
-    role: 'Attendee',  // self-registration always creates Attendee; Admin assigns roles later
-  });
-
-  const { accessToken } = await issueTokens(res, user);
-
-  return res.status(201).json({
-    accessToken,
-    user: toPublicUser(user),
-  });
 };
 
 /**
@@ -137,29 +146,39 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  // Find user — include passwordHash (normally excluded by toJSON)
-  const user = await User.findOne({ where: { email } });
+  try {
+    // Find user — include passwordHash (normally excluded by toJSON)
+    const user = await User.findOne({ where: { email } });
 
-  if (!user) {
-    // Deliberately identical message to the wrong-password case below
-    return res.status(401).json({
-      error: { message: 'Invalid email or password.', code: 'INVALID_CREDENTIALS' },
+    if (!user) {
+      // Deliberately identical message to the wrong-password case below
+      return res.status(401).json({
+        error: { message: 'Invalid email or password.', code: 'INVALID_CREDENTIALS' },
+      });
+    }
+
+    const passwordMatch = await comparePassword(password, user.passwordHash);
+    if (!passwordMatch) {
+      return res.status(401).json({
+        error: { message: 'Invalid email or password.', code: 'INVALID_CREDENTIALS' },
+      });
+    }
+
+    const { accessToken } = await issueTokens(res, user);
+
+    return res.status(200).json({
+      accessToken,
+      user: toPublicUser(user),
+    });
+  } catch (err) {
+    // Without this, an unexpected DB/bcrypt error becomes an unhandled rejection
+    // (Express 4 has no async error forwarding), the request hangs, and the
+    // frontend falls back to the generic "Something went wrong." message.
+    logger.error('[login] unexpected error:', err);
+    return res.status(500).json({
+      error: { message: 'Internal server error.', code: 'INTERNAL_ERROR' },
     });
   }
-
-  const passwordMatch = await comparePassword(password, user.passwordHash);
-  if (!passwordMatch) {
-    return res.status(401).json({
-      error: { message: 'Invalid email or password.', code: 'INVALID_CREDENTIALS' },
-    });
-  }
-
-  const { accessToken } = await issueTokens(res, user);
-
-  return res.status(200).json({
-    accessToken,
-    user: toPublicUser(user),
-  });
 };
 
 /**
