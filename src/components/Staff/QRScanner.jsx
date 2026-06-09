@@ -90,14 +90,34 @@ const QRScanner = ({ sessionId, onScanSuccess }) => {
       }
     };
 
-    try {
-      await html5Qrcode.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
+    // Responsive scan box: 80% of the smaller viewfinder edge so the QR has a
+    // large target area on any device (the old fixed 220×220 box was a tiny
+    // square in the centre that made codes very hard to line up and read).
+    const qrboxFn = (viewfinderWidth, viewfinderHeight) => {
+      const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+      const size = Math.max(200, Math.floor(minEdge * 0.8));
+      return { width: size, height: size };
+    };
+
+    // Try the back camera first (best for scanning a code held by someone else),
+    // then fall back to ANY available camera — laptops have no 'environment'
+    // camera, so without this fallback the scanner silently fails to start there.
+    const startWith = async (cameraConfig) =>
+      html5Qrcode.start(
+        cameraConfig,
+        { fps: 15, qrbox: qrboxFn },
         onSuccess,
         // frame-decode error — suppress, not actionable
         () => {},
       );
+
+    try {
+      try {
+        await startWith({ facingMode: 'environment' });
+      } catch {
+        // environment camera unavailable (e.g. laptop) — use the default camera
+        await startWith({ facingMode: 'user' });
+      }
       setScanning(true);
     } catch (err) {
       scannerRef.current = null;

@@ -435,6 +435,7 @@ const AttendeeManagement = () => {
                 </S.BulkBar>
               )}
 
+              {/* ──────────────────────────────────────────────────────────────────
                   Desktop table (sticky header, hidden at ≤414px)
                   PII: email and studentId are already masked by the backend for
                   non-Admin roles. Frontend shows the backend-returned value and
@@ -560,6 +561,7 @@ const AttendeeManagement = () => {
                 )}
               </S.TableWrapper>
 
+              {/* ──────────────────────────────────────────────────────────────────
                   Mobile card stacks (≤414px only, hidden on desktop via CSS)
                   Each card shows Name + Status in the collapsed header row.
                   Tapping the chevron expands to show Email, Dept, Session, Date.

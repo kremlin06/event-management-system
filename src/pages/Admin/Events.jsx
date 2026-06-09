@@ -592,6 +592,7 @@ const Events = () => {
         <Footer />
       </MainArea>
 
+      {/* ────────────────────────────────────────────────────────────────────────
           Create Event Modal — StepperFormModal (2-step wizard: event + sessions)
           onSuccess re-fetches the events list so the new event appears immediately
       ──────────────────────────────────────────────────────────────────────── */}
@@ -605,6 +606,7 @@ const Events = () => {
         />
       )}
 
+      {/* ────────────────────────────────────────────────────────────────────────
           Edit Event Modal — simple form (no session editing)
           calls updateEvent(id, editForm) on submit
       ──────────────────────────────────────────────────────────────────────── */}
@@ -732,6 +734,7 @@ const Events = () => {
         </>
       )}
 
+      {/* ────────────────────────────────────────────────────────────────────────
           Delete Confirm Modal
           backend cascade-deletes sessions assigned to this event
       ──────────────────────────────────────────────────────────────────────── */}

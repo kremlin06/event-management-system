@@ -387,6 +387,7 @@ const AnalyticsView = () => {
         <DashboardContent>
           <S.AnalyticsLayout>
 
+            {/* ───────────────────────────────────────────────────────────────────
                 Left: Filter Side Panel (desktop ≥769px, sticky)
                 Contains: Event, Session, Date Range, Text Search, PIIToggle
             ─────────────────────────────────────────────────────────────────── */}
@@ -417,6 +418,7 @@ const AnalyticsView = () => {
               {renderPIIToggle()}
             </S.FilterSidePanel>
 
+            {/* ───────────────────────────────────────────────────────────────────
                 Right: Main analytics content
                 4 MetricCards → Chart → Report Table
             ─────────────────────────────────────────────────────────────────── */}

@@ -64,8 +64,13 @@ const QRDisplay = ({ user, qrValue, size = 220 }) => (
       <QRCodeSVG
         value={qrValue}
         size={size}
-        level="H"
-        includeMargin={false}
+        // level "M" (15% error correction) instead of "H" (30%): the signed
+        // payload is long, and "H" packs in so many tiny modules that phone
+        // cameras struggle to resolve them. "M" yields larger, easier-to-scan
+        // squares while still tolerating normal screen glare.
+        level="M"
+        // a quiet margin around the code measurably improves scan lock-on
+        includeMargin
         style={{ display: 'block' }}
       />
     </QRFrame>
@@ -184,7 +189,7 @@ const MyQRCode = () => {
           {loadingQR
             ? <div style={{ padding: '4rem', color: 'var(--text-tertiary)', fontSize: '0.875rem' }}>Generating QR code...</div>
             : qrValue
-              ? <QRDisplay user={user} qrValue={qrValue} size={220} />
+              ? <QRDisplay user={user} qrValue={qrValue} size={256} />
               : !qrError && (
                 events.length === 0
                   // No registered events — guide the user to the Browse & Register page
@@ -243,7 +248,7 @@ const MyQRCode = () => {
               </button>
             </div>
 
-            <QRDisplay user={user} qrValue={qrValue} size={200} />
+            <QRDisplay user={user} qrValue={qrValue} size={240} />
 
             <ActionBtn onClick={() => setShowModal(false)} $variant="ghost" style={{ width: '100%' }}>
               Close
