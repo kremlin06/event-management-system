@@ -1,4 +1,4 @@
-// src/pages/Admin/AttendeeManagement.jsx
+
 // Attendee Registration & Management — FR-04 (bulk/manual ingestion) + FR-05 (session assignment)
 // Blueprint 6 — admin sidebar shell, segmented control, PaginatedTable + mobile card stacks
 //
