@@ -55,13 +55,18 @@ app.use(httpsRedirect);
 // CORS
 // Parse comma-separated CORS_ORIGIN env var into an array so multiple
 // origins can be allowed without code changes (e.g. dev + staging).
-const allowedOrigins = env.CORS_ORIGIN.split(',').map((o) => o.trim());
+// We strip any trailing slash so "https://app.vercel.app/" and
+// "https://app.vercel.app" are treated as the same origin — browsers send
+// the Origin header WITHOUT a trailing slash, so an exact match against a
+// value that has one would silently fail every CORS preflight.
+const stripTrailingSlash = (s) => s.replace(/\/+$/, '');
+const allowedOrigins = env.CORS_ORIGIN.split(',').map((o) => stripTrailingSlash(o.trim()));
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (curl, Postman, server-to-server)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (allowedOrigins.includes(stripTrailingSlash(origin))) return callback(null, true);
     callback(new Error(`CORS: origin "${origin}" is not allowed`));
   },
   credentials: true,  // Required so the browser sends the refresh token cookie cross-origin
