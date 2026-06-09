@@ -1,4 +1,4 @@
-// src/components/Staff/AttendanceScanner.jsx
+
 // Reusable QR attendance scanner workspace — Blueprint 7.
 //
 // session picker -> present-count-vs-capacity counter -> two panes

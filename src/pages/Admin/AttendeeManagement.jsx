@@ -1,4 +1,4 @@
-// src/pages/Admin/AttendeeManagement.jsx
+
 // Attendee Registration & Management — FR-04 (bulk/manual ingestion) + FR-05 (session assignment)
 // Blueprint 6 — admin sidebar shell, segmented control, PaginatedTable + mobile card stacks
 //
@@ -435,12 +435,12 @@ const AttendeeManagement = () => {
                 </S.BulkBar>
               )}
 
-              {/* ──────────────────────────────────────────────────────────────────
+              {/*
                   Desktop table (sticky header, hidden at ≤414px)
                   PII: email and studentId are already masked by the backend for
                   non-Admin roles. Frontend shows the backend-returned value and
                   adds a monospace "masked" style to make it visually distinct.
-              ────────────────────────────────────────────────────────────────── */}
+               */}
               <S.TableWrapper>
                 <S.Table aria-label="Registered attendees">
                   <S.Thead>
@@ -561,12 +561,12 @@ const AttendeeManagement = () => {
                 )}
               </S.TableWrapper>
 
-              {/* ──────────────────────────────────────────────────────────────────
+              {/*
                   Mobile card stacks (≤414px only, hidden on desktop via CSS)
                   Each card shows Name + Status in the collapsed header row.
                   Tapping the chevron expands to show Email, Dept, Session, Date.
                   Prevents horizontal scroll — satisfies the Blueprint 6 mobile spec.
-              ────────────────────────────────────────────────────────────────── */}
+               */}
               {!listLoading && attendees.length > 0 && (
                 <S.MobileCardList aria-label="Registered attendees (mobile)">
                   {attendees.map((row) => {
@@ -675,10 +675,10 @@ const AttendeeManagement = () => {
         <Footer />
       </MainArea>
 
-      {/* ── Session Assignment Modal (US-08 / US-09) ─────────────────────────
+      {/* Session Assignment Modal (US-08 / US-09)
           opens when "Assign Sessions" is clicked with ≥1 attendee selected
           POST /api/admin/registrations/assign — bulkCreate SessionAssignment rows
-      ────────────────────────────────────────────────────────────────────────── */}
+      */}
       {showAssignModal && (
         <SessionAssignmentModal
           attendees={selectedAttendees}
@@ -692,7 +692,7 @@ const AttendeeManagement = () => {
         />
       )}
 
-      {/* ── Create Event wizard (opened from the sidebar "Create Event") ──────
+      {/*  Create Event wizard (opened from the sidebar "Create Event") 
           old: the sidebar item navigated to /dashboard to open this modal there;
           now it opens in place here. onSuccess refreshes the event selector. */}
       {showCreateModal && (
