@@ -1,20 +1,20 @@
 import styled from 'styled-components';
 
-// token keys for each status — no hardcoded colors
+
 const STATUS_MAP = {
-  Confirmed: { bg: 'successBg',  text: 'success'       },
-  Pending: { bg: 'warningBg',  text: 'warning'       },
-  Cancelled: { bg: 'errorBg',    text: 'error'         },
-  Upcoming: { bg: 'infoBg',     text: 'info'          },
-  Ongoing: { bg: 'successBg',  text: 'success'       },
+  Confirmed: { bg: 'successBg', text: 'success' },
+  Pending: { bg: 'warningBg', text: 'warning' },
+  Cancelled: { bg: 'errorBg', text: 'error' },
+  Upcoming: { bg: 'infoBg', text: 'info' },
+  Ongoing: { bg: 'successBg', text: 'success' },
   Completed: { bg: 'bgTertiary', text: 'textSecondary' },
-  Draft: { bg: 'bgTertiary', text: 'textTertiary'  },
-  Present: { bg: 'successBg',  text: 'success'       },
-  Late: { bg: 'warningBg',  text: 'warning'       },
-  Absent: { bg: 'errorBg',    text: 'error'         },
+  Draft: { bg: 'bgTertiary', text: 'textTertiary' },
+  Present: { bg: 'successBg', text: 'success' },
+  Late: { bg: 'warningBg', text: 'warning' },
+  Absent: { bg: 'errorBg', text: 'error' },
 };
 
-// no border per spec — background + text only
+
 const Badge = styled.span`
   display: inline-block;
   padding: 2px 10px;
